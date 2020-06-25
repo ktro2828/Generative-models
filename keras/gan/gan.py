@@ -2,12 +2,12 @@
 
 import keras
 from keras import layers
-from tensorflow.keras.optimizers import Adam, RMSprop
+from keras.optimizers import Adam, RMSprop
 
 
 class Gan(object):
     def __init__(self, image_shape, latent_dim, leaky_relu, tilt, drop_rate, gan_optim, disc_optim):
-        (self.img_h, self.img_w, self.channels) = image_shape
+        self.img_h, self.img_w, self.channels = image_shape
         self.latent_dim = latent_dim
         self.leaky_relu = leaky_relu
         self.tilt = tilt
@@ -60,7 +60,7 @@ class Gan(object):
         """Build discriminator
         """
         discriminator_input = layers.Input(
-            self.img_h, self.img_w, self.channels)
+            shape=(self.img_h, self.img_w, self.channels))
 
         x = layers.Conv2D(64, 5, strides=2, padding='same',
                           kernel_initializer=self.init)(discriminator_input)
