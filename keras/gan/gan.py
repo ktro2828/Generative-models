@@ -49,7 +49,7 @@ class Gan(object):
             x = layers.BatchNormalizatuin()(x)
             x = layers.Activation('relu')(x)
 
-        x = layers.Conv2D(channels, 5, activation='tanh', padding='same')(x)
+        x = layers.Conv2D(self.channels, 5, activation='tanh', padding='same')(x)
 
         generator = keras.models.Model(generator_input, x)
         generator.summary()
