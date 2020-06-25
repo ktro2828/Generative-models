@@ -6,8 +6,8 @@ from tensorflow.keras.optimizers import Adam, RMSprop
 
 
 class Gan(object):
-    def __init__(self, image, latent_dim, leaky_relu, tilt, drop_rate, gan_optim, disc_optim):
-        (self.img_h, self.img_w, self.channels) = image.shape
+    def __init__(self, image_shape, latent_dim, leaky_relu, tilt, drop_rate, gan_optim, disc_optim):
+        (self.img_h, self.img_w, self.channels) = image_shape
         self.latent_dim = latent_dim
         self.leaky_relu = leaky_relu
         self.tilt = tilt
@@ -21,7 +21,7 @@ class Gan(object):
     def generator_builder(self):
         """Build generator
         """
-        generator_input = keras.Input(shape=(latent_dim,))
+        generator_input = keras.Input(shape=(self.latent_dim,))
 
         x = layers.Dense(
             128 * 7 * 7, kernel_initializer=self.init)(generator_input)
@@ -84,6 +84,8 @@ class Gan(object):
         return discriminator
 
     def build(self):
+        """Build GAN
+        """
         generator = self.generator_builder()
         discriminator = self.discriminator_builder()
 
