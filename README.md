@@ -30,3 +30,8 @@ python3 ./VAE.py -d [dataset_name]
   - --genoptim : generator's optimizer(default=adam)
   - --discoptim : discriminator's optimizer(default=adam)
   - --softlabel : use softlabel or not(default=False)
+
+### Quick start
+```
+python3 ./train.py -d [dataset_name]
+```
