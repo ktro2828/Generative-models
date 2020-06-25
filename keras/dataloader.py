@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from keras.datsets import mnist, fashion_mnist
+from keras.datasets import mnist, fashion_mnist
 
-def mnist(dataset):
+def mnist_loader(dataset):
     """Load MNIST dataset
     """
     if dataset=='mnist':
