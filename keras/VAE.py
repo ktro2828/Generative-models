@@ -2,33 +2,34 @@
 
 import keras
 from keras import layers
-from keras import backend as k
+from keras import backend as K
 from keras.models import Model
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.states import norm
+from scipy.stats import norm
 
 from args import argument_parser
-from dataloader import mnist
+from dataloader import mnist_loader
 
 
 def main():
     parser = argument_parser()
     args = parser.parse_args()
 
-    dataset = mnist(args.dataset)
+    dataset = mnist_loader(args.dataset)
     x_train = dataset['x_train']
     x_test = dataset['x_test']
 
     input_shape = x_train.shape[1:]
     input_dim = x_train.shape[1] * x_train.shape[2] * x_train.shape[3]
+    print(input_dim)
     latent_dim = args.latentdim
 
     input_img = keras.Input(shape=input_shape)
 
-    x = layers.Conv2D(32, 3, padding='same', activate='relu')(input_img)
-    x = layes.Conv2D(64, 3, padding='same', activation='relu', stride=(2, 2))(x)
-    x = layers.Conv2D(64, 3, padding='same', activate='relu')(x)
+    x = layers.Conv2D(32, 3, padding='same', activation='relu')(input_img)
+    x = layers.Conv2D(64, 3, padding='same', activation='relu', strides=(2, 2))(x)
+    x = layers.Conv2D(64, 3, padding='same', activation='relu')(x)
     x = layers.Conv2D(64, 3, padding='same', activation='relu')(x)
 
     shape_before_flatting = K.int_shape(x)
@@ -39,20 +40,21 @@ def main():
     z_mean = layers.Dense(latent_dim)(x)
     z_log_var = layers.Dense(latent_dim)(x)
 
-    z = layers.Lambda(sampling)([z_mean, z_log_var])
+    z = layers.Lambda(sampling, arguments={'latent_dim': latent_dim})([z_mean, z_log_var])
 
-    decoder_input = layers.Input(K.int_shape(z))[1:]
+    decoder_input = layers.Input(K.int_shape(z)[1:])
 
     x = layers.Dense(np.prod(shape_before_flatting[1:]), activation='relu')(decoder_input)
-    x = layers.Conv2Dtranspose(32, 3, padding='same', activation='relu', strides=(2, 2))(x)
+    x = layers.Reshape(shape_before_flatting[1:])(x)
+    x = layers.Conv2DTranspose(32, 3, padding='same', activation='relu', strides=(2, 2))(x)
     x = layers.Conv2D(1, 3, padding='same', activation='sigmoid')(x)
 
     decoder = Model(decoder_input, x)
     z_decoded = decoder(z)
 
-    y = CustomVariationalLayer()([input_shape, z_decoded])
+    y = CustomVariationalLayer(input_dim, z_mean, z_log_var)([input_img, z_decoded])
 
-    vae.Model(input_img, y)
+    vae = Model(input_img, y)
     vae.compile(optimizer='rmsprop', loss=None)
     vae.summary()
 
@@ -62,29 +64,36 @@ def main():
             batch_size=args.batch_size,
             validation_data=(x_test, None))
 
-def sampling(args):
+def sampling(args, **kwarg):
     z_mean, z_log_var = args
-    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], latent_dim), mean=0., stddev=1,)
+    latent_dim = kwarg['latent_dim']
+    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], latent_dim), mean=0., stddev=1.)
 
     return z_mean + K.exp(z_log_var) * epsilon
 
 class CustomVariationalLayer(keras.layers.Layer):
     """define VAE-loss
     """
+    def __init__(self, input_dim, z_mean, z_log_var):
+        super(CustomVariationalLayer, self).__init__()
+        self.input_dim = input_dim
+        self.z_mean = z_mean
+        self.z_log_var = z_log_var
+
     def vae_loss(self, x, z_decoded):
         x = K.flatten(x)
         z_decoded = K.flatten(z_decoded)
 
-        reconst_loss = input_dim*keras.metrics.binary_crossentropy(x, z_decoded)
+        reconst_loss = self.input_dim*keras.metrics.binary_crossentropy(x, z_decoded)
 
         kl_loss = -0.5*K.sum(
-            1 + z_log_var - K.square(z_mean) - K.exp(2*z_log_var), axis=-1)
+            1 + self.z_log_var - K.square(self.z_mean) - K.exp(2*self.z_log_var), axis=-1)
 
         return K.mean(reconst_loss + kl_loss)
 
     def call(self, inputs):
         x = inputs[0]
-        z_encoded = inputs[1]
+        z_decoded = inputs[1]
         loss = self.vae_loss(x, z_decoded)
         self.add_loss(loss, inputs=inputs)
 
