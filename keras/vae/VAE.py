@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+
 import keras
 from keras import layers
 from keras import backend as K
@@ -64,6 +66,13 @@ def main():
             batch_size=args.batch_size,
             validation_data=(x_test, None))
 
+    show_genarated_img(decoder, args.dataset)
+
+    if os.path.exists('./model/') is False:
+        os.makedirs('./model/')
+    vae.save('./model/vae.h5', include_optimizer=False)
+    print('==> Saved model')
+
 def sampling(args, **kwarg):
     z_mean, z_log_var = args
     latent_dim = kwarg['latent_dim']
@@ -99,7 +108,7 @@ class CustomVariationalLayer(keras.layers.Layer):
 
         return x
 
-def show_genarated_img(decoder, args):
+def show_genarated_img(decoder, dataset_name):
     grid_shape = 15
     digit_size = 28
 
@@ -132,8 +141,11 @@ def show_genarated_img(decoder, args):
     plt.figure(figsize=(10, 10))
     plt.imshow(fig, cmap='Greys_r')
     plt.show()
-    plt.savefig('generated_{}.png'.format(args.dataset))
+    if os.path.exists('./generated_img/') is False:
+        os.makedirs('./generated_img/')
+    plt.savefig('./generated_img/{}.png'.format(dataset_name))
     plt.close()
+    print('==> Saved figure')
 
 
 if __name__ == '__main__':
