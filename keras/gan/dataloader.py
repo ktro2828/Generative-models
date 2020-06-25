@@ -12,7 +12,7 @@ def dataloader(dataset_name):
 
     # Because activation is tabh, each pixel has value in [-1, 1]
     x_train = (x_train.astype('float32')-127.5)/127.5
-    x_train = x_train.reshape(x_trian.shape + (1,))
+    x_train = x_train.reshape(x_train.shape + (1,))
     x_test = (x_test.astype('float32')-127.5)/127.5
     x_test = x_test.reshape(x_test.shape + (1,))
 
