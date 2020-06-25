@@ -14,5 +14,6 @@ def argument_parser():
     parser.add_argument('--droprate', type=float, default=0.3, help='dropout rate')
     parser.add_argument('--genoptim', type=str, default='adam', help='adam or rmsprop')
     parser.add_argument('--discoptim', type=str, default='adam', help='adam or rmsprop')
+    parser.add_argument('--softlabel', type=bool, default=False, help='use softlabel or not')
 
     return parser
