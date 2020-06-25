@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from keras.dataset import mnist, fashion_mnist, cifar10
+from keras.datasets import mnist, fashion_mnist, cifar10
 
 def dataloader(dataset_name):
     if dataset_name == 'mnist':
