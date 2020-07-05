@@ -13,21 +13,17 @@ def noise_generator(batch_size, latent_dim, device):
 
     return random_latent_vec
 
-
-def cal_loss(preds, label):
-    crietion = nn.BCELoss()
-
-    return crietion(preds, label)
-
-
 def train(G, D,
           G_optimizer, D_optimizer,
           train_dl,
+          batch_size,
           latent_dim,
           soft_label,
           epoch,
           epochs,
-          history):
+          history,
+          device,
+          criterion):
     """Training for discriminator and generator
 
     Parameters
@@ -47,7 +43,6 @@ def train(G, D,
     G_train_loss = 0
     D_train_loss = 0
     train_step = len(train_dl)
-    batch_size = train_dl.size()[0]
 
     for real_img, _ in tqdm(train_dl, desc='Epoch: {}/{}'.format(epoch + 1, epochs)):
         # Discriminator training
@@ -60,7 +55,7 @@ def train(G, D,
         else:
             y_real *= 0.9
         y_real = y_real.to(device)
-        D_real_loss = cal_loss(y_real, D_result)
+        D_real_loss = criterion(y_real, D_result)
 
         # fake image(generated image by generator)
         random_latent_vec = noise_generator(batch_size, latent_dim, device)
@@ -72,7 +67,7 @@ def train(G, D,
         else:
             y_fake *= 0.9
         y_fake.to(device)
-        D_fake_loss = cal_loss(D_result, y_fake)
+        D_fake_loss = criterion(D_result, y_fake)
 
         D_loss = D_real_loss + D_fake_loss
 
@@ -85,7 +80,7 @@ def train(G, D,
         random_latent_vec = noise_generator(batch_size, latent_dim, device)
         G_result = G(random_latent_vec)
         D_result = D(G_result).squeeze()
-        G_loss = cal_loss(D_result, y_real)
+        G_loss = criterion(D_result, y_real)
 
         G_train_loss += G_loss.item()
         G_optimizer.zero_grad()
