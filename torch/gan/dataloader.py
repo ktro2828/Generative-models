@@ -21,11 +21,11 @@ def dataloader(dataset_name, batch_size):
         train_loader = DataLoader(
             datasets.MNIST('./',
                            train=True,
-                           dowanload=True,
+                           download=True,
                            transform=transforms.Compose([
-                               transforms.RandomHorizontialFlip(p=0.5),
+                               transforms.RandomHorizontalFlip(p=0.5),
                                transforms.RandomAffine(
-                                   degree=0.2, scale=(0.8, 1.2)),
+                                   degrees=0.2, scale=(0.8, 1.2)),
                                transforms.ToTensor(),
                                transforms.Normalize(
                                    mean=[
@@ -45,7 +45,7 @@ def dataloader(dataset_name, batch_size):
                                       transforms.RandomHorizontialFlip(
                                           p=0.5),
                                       transforms.RandomAffine(
-                                          degree=0.2, scale=(0.8, 1.2)),
+                                          degrees=0.2, scale=(0.8, 1.2)),
                                       transforms.ToTensor(),
                                       transforms.Normalize(
                                           mean=[
@@ -60,9 +60,9 @@ def dataloader(dataset_name, batch_size):
         train_loader = DataLoader(
             datasets.CelebA('./',
                             train=True,
-                            dowanload=True,
+                            download=True,
                             transform=transforms.Compose([
-                                transforms.RandomHorizontialFlip(p=0.5),
+                                transforms.RandomHorizontalFlip(p=0.5),
                                 transforms.RandomAffine(
                                     degree=0.2, scale=(0.8, 1.2)),
                                 transforms.ToTensor(),
