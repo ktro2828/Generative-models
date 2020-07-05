@@ -28,9 +28,8 @@ def dataloader(dataset_name, batch_size):
                                    degrees=0.2, scale=(0.8, 1.2)),
                                transforms.ToTensor(),
                                transforms.Normalize(
-                                   mean=[
-                                       0.485, 0.456, 0.406],
-                                   std=[0.229, 0.224, 0.225]
+                                   mean=[0.485,],
+                                   std=[0.229,]
                                )
                            ])),
             batch_size=batch_size,
@@ -48,9 +47,8 @@ def dataloader(dataset_name, batch_size):
                                           degrees=0.2, scale=(0.8, 1.2)),
                                       transforms.ToTensor(),
                                       transforms.Normalize(
-                                          mean=[
-                                              0.485, 0.456, 0.406],
-                                          std=[0.229, 0.224, 0.225]
+                                          mean=(0.485,),
+                                          std=(0.229,)
                                       )
                                   ])),
             batch_size=batch_size,
