@@ -21,7 +21,7 @@ class Generator(nn.Module):
     """
     def __init__(self, dataset_name, latent_dim, leakyrelu, slope):
         super(Generator, self).__init__()
-        if 'mnist' is dataset_name:
+        if 'mnist' in dataset_name:
             out_channel = 1
         else:
             out_channel = 3
@@ -84,15 +84,15 @@ class Discriminator(nn.Module):
         self.droprate = droprate
 
         self.conv1 = nn.Conv2d(in_channel, 64, kernel_size=(3, 3), stride=(2, 2), padding=1)
-        self.conv2 = nn.conv2d(64, 128, kernel_size=(3, 3), strides=(2, 2), padding=1)
-        self.conv3 = nn.Conv2d(128, 256, kernel_size=(3, 3), strides=(2, 2), padding=1)
-        self.avg_pool = GlobalAvgPool2d()
-        self.fc1 = nn.linear(256*7*7, 1024)
-        self.bn1 = nn.BartchNorm1d(1024)
-        self.fc2 = nn.linear(1024, 1)
+        self.conv2 = nn.Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=1)
+        self.conv3 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=1)
+        self.avg_pool = self.GlobalAvgPool2d()
+        self.fc1 = nn.Linear(256, 1024)
+        self.bn1 = nn.BatchNorm1d(1024)
+        self.fc2 = nn.Linear(1024, 1)
 
     def forward(self, x):
-        h = self.conv1(h)
+        h = self.conv1(x)
         h = F.leaky_relu_(h, self.slope)
         h = F.dropout2d(h, self.droprate, inplace=True)
         h = self.conv2(h)
@@ -115,7 +115,7 @@ class Discriminator(nn.Module):
             super().__init__()
 
         def forward(self, x):
-            return F.avg_pool2d(x, kernel_size=x.size()[2:].view(01, x.size(1)))
+            return F.avg_pool2d(x, kernel_size=x.size()[2:]).view(-1, x.size(1))
 
 class Gan(nn.Module):
     """Gan block
