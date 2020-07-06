@@ -48,19 +48,19 @@ def train(G, D,
         # Discriminator training
         # real image
         real_img = real_img.to(device)
-        D_result = D(real_img).squeeze()
+        D_result = D(real_img)
         y_real = torch.ones(batch_size)
         if soft_label:
             y_real += 0.05 * torch.rand(y_real.size())
         else:
             y_real *= 0.9
         y_real = y_real.to(device)
-        D_real_loss = criterion(y_real, D_result)
+        D_real_loss = criterion(D_result, y_real)
 
         # fake image(generated image by generator)
         random_latent_vec = noise_generator(batch_size, latent_dim, device)
         G_result = G(random_latent_vec)
-        D_result = D(G_result).squeeze()
+        D_result = D(G_result)
         y_fake = torch.zeros(batch_size)
         if soft_label:
             y_fake += 0.05 * torch.rand(y_fake.size())
