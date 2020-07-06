@@ -29,9 +29,9 @@ class Generator(nn.Module):
         self.leakyrelu = leakyrelu
         self.slope = slope
 
-        self.linear = nn.Linear(latent_dim, 256 * 14 * 14)
+        self.linear = nn.Linear(latent_dim, 128 * 16 * 16)
         if self.leakyrelu is False:
-            self.bn1 = nn.BartchNorm1d(256 * 14 * 14)
+            self.bn1 = nn.BartchNorm1d(128 * 16 * 16)
         self.conv1 = nn.Conv2d(256, 128, kernel_size=(3, 3), padding=1)
         if self.leakyrelu is False:
             self.bn2 = nn.BatchNorm2d(128)

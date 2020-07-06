@@ -8,10 +8,10 @@ from tqdm import tqdm
 def noise_generator(batch_size, latent_dim, device):
     """Generate noise for generator, size=(batch_size, latent_dim, 1, 1)
     """
-    random_latent_vec = torch.randn(
-        batch_size, latent_dim).view(-1, latent_dim, 1, 1).to(device)
+    random_latent_vec = torch.randn(batch_size, latent_dim).to(device)
 
     return random_latent_vec
+
 
 def train(G, D,
           G_optimizer, D_optimizer,
@@ -57,7 +57,7 @@ def train(G, D,
         y_real = y_real.to(device)
         D_real_loss = criterion(D_result, y_real)
 
-        # fake image(generated image by generator)
+        # fake image(generated image by Generator)
         random_latent_vec = noise_generator(batch_size, latent_dim, device)
         G_result = G(random_latent_vec)
         D_result = D(G_result)
